@@ -67,7 +67,7 @@ class TerraformVariablesPayload:
 
 def get_tfe_workspace_headers(token):
     
-    # Create headers for get request
+    # Create headers for API request
     terraform_token = os.environ['TFE_TOKEN']
     bearer_token = "Bearer {}".format(terraform_token)
 

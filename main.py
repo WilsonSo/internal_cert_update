@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import os
 import logging
@@ -32,6 +32,10 @@ attributes = {
     }
 }
 
+# Set workspace name if overridden in bamboo. Testing purposes only
+if 'bamboo_WORKSPACE_NAME' in os.environ:
+    attributes[env]['workspace_name'] = os.environ['bamboo_WORKSPACE_NAME']
+
 def generate_certs():
     # Generate the internal certificate
     certificate, private_key, ca_chain = vault_certs.generate_certificate(
@@ -52,7 +56,7 @@ tfe_workspace_id = terraform_workspace.get_workspace_id(
     )
 
 def upload_certs(certificate, private_key, ca_chain):
-    
+
     # Create list of tuples of key, value and sensitive boolean
     tfe_variable_properties = [
         ("internal_certificate", certificate, False),
@@ -73,7 +77,7 @@ def upload_certs(certificate, private_key, ca_chain):
             value = tfe_variable_value,
             sensitive = tfe_variable_sensitive
         )
-        
+
         terraform_workspace.upload_certs_to_tfe(
             workspace_headers = tfe_workspace_headers,
             workspace_id = tfe_workspace_id,

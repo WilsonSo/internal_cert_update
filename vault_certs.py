@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import os
 import json
@@ -23,7 +23,7 @@ def generate_certificate(attributes, vault_env, role, ttl='2160h'):
     # Make POST call to issue a new cert from the role
     res = requests.post(vault_generate_cert_url, json=vault_payload, headers=vault_headers)
     if not res.ok:
-        logging.error("Unable to generate certificates from {}. Exiting".format(role))
+        logging.error("Unable to generate certificates from {} - Exiting".format(role))
         raise SystemExit(1)
     else:
         logging.info("Certificates successfully generated")

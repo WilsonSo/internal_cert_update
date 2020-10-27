@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import os
 import json
@@ -43,7 +43,11 @@ class TerraformVariablesPayload:
 
         """Makes POST request to workspace variable API to create variable """
 
-        res = requests.post(url, json=self.payload, headers=headers)
+        try:
+            res = requests.post(url, json=self.payload, headers=headers)
+        except requests.exceptions.RequestException as err:
+            raise SystemExit(err)
+        
         if not res.ok:
             logging.error("An error occurred creating the variable {}".format(self.key))
             raise SystemExit(1)
@@ -56,17 +60,21 @@ class TerraformVariablesPayload:
 
         # append variable ID to payload in order to make PATCH call
         self.payload['data']['id'] = var_id
-        res = requests.patch(url, json=self.payload, headers=headers)
+
+        try:
+            res = requests.patch(url, json=self.payload, headers=headers)
+        except requests.exceptions.RequestException as err:
+            raise SystemExit(err)
+
         if not res.ok:
             logging.error("An error occurred updating the variable {}".format(self.key))
             raise SystemExit(1)
         else:
             logging.info("Terraform var {} was successfully updated".format(self.key))
 
-    
 
 def get_tfe_workspace_headers(token):
-    
+
     # Create headers for API request
     terraform_token = os.environ['TFE_TOKEN']
     bearer_token = "Bearer {}".format(terraform_token)
@@ -83,39 +91,42 @@ def get_workspace_id(workspace_headers, workspace_name, org='CCBD'):
     # determine workspace id of environment
     workspace_list_url = 'https://app.terraform.io/api/v2/organizations/{}/workspaces'.format(org) # CCBD
 
-    res = requests.get(workspace_list_url, headers=workspace_headers)
-    if not res.ok:
+    try:
+        res = requests.get(workspace_list_url, headers=workspace_headers)
+    except requests.exceptions.RequestException as err:
         logging.error("Unable to retrieve list of workspaces from TFE")
-        raise SystemExit(1)
-    else:
-        workspaces = json.loads(res.text)
+        raise SystemExit(err)
 
-        # return json object data of workspace we're searching for
-        workspace = list(filter(lambda x:x["attributes"]["name"]==workspace_name, workspaces['data']))[0] 
-        return workspace['id']
+    workspaces = json.loads(res.text)
+
+    # return json object data of workspace we're searching for
+    workspace = list(filter(lambda x:x["attributes"]["name"]==workspace_name, workspaces['data']))[0]
+    return workspace['id']
 
 def upload_certs_to_tfe(workspace_headers, workspace_id, variable_name, payload_object):
-    
+
     # Set workspace vars api to upload to
     workspace_vars_url = "https://app.terraform.io/api/v2/workspaces/{}/vars".format(workspace_id)
 
-    # Determine if variable already exists. If it does, we make a PATCH call instead of POST
-    res = requests.get(workspace_vars_url, headers=workspace_headers)
-    if not res.ok:
+    # Retrieve list of current variables
+    try:
+        res = requests.get(workspace_vars_url, headers=workspace_headers)
+    except requests.exceptions.RequestException as err:
         logging.error("Unable to retrieve list of variables for workspace {}".format(workspace_id))
-        raise SystemExit(1)
-    else:
-        workspace_vars = json.loads(res.text)['data']
-        try:
-            variables = list(filter(lambda x:x["attributes"]["key"]==variable_name,workspace_vars))[0]
-            var_id = variables['id']
-            logging.info("Existing variable found for {}, updating terraform variable".format(variable_name))
-            workspace_vars_url = "https://app.terraform.io/api/v2/workspaces/{}/vars/{}".format(workspace_id,var_id)
-            payload_object.update_variable(url=workspace_vars_url, headers=workspace_headers, var_id=var_id)
-        except:
-            logging.info("No variables found matching {}. Creating now".format(variable_name))
-            workspace_vars_url = "https://app.terraform.io/api/v2/workspaces/{}/vars".format(workspace_id)
-            payload_object.create_variable(url=workspace_vars_url, headers=workspace_headers)
+        raise SystemExit(err)
+        
+    # Determine if variable already exists. If it does, we make a PATCH call instead of POST
+    workspace_vars = json.loads(res.text)['data']
+    try:
+        variables = list(filter(lambda x:x["attributes"]["key"]==variable_name,workspace_vars))[0]
+        var_id = variables['id']
+        logging.info("Existing variable found for {}, updating terraform variable".format(variable_name))
+        workspace_vars_url = "https://app.terraform.io/api/v2/workspaces/{}/vars/{}".format(workspace_id,var_id)
+        payload_object.update_variable(url=workspace_vars_url, headers=workspace_headers, var_id=var_id)
+    except:
+        logging.info("No variables found matching {}. Creating now".format(variable_name))
+        workspace_vars_url = "https://app.terraform.io/api/v2/workspaces/{}/vars".format(workspace_id)
+        payload_object.create_variable(url=workspace_vars_url, headers=workspace_headers)
 
 def trigger_tfe_workspace_run(workspace_headers, workspace_name, workspace_id, target_resources="", org='CCBD'):
 
@@ -141,15 +152,19 @@ def trigger_tfe_workspace_run(workspace_headers, workspace_name, workspace_id, t
             }
         }
     }
-    
-    res = requests.post(tfe_run_url, json=payload, headers=workspace_headers)
-    if not res.ok:
-        logging.error("An error occurred triggering run in workspace {}".format(workspace_id))
-        raise SystemExit(1)
-    else:
+
+    try:
+        res = requests.post(tfe_run_url, json=payload, headers=workspace_headers)
+    except requests.exceptions.RequestException as err:
+        raise SystemExit(err)
+
+    try:
         run_res = json.loads(res.text)['data']
         run_id = run_res['id']
         run_url = "https://app.terraform.io/app/{}/workspaces/{}/runs/{}".format(
             org, workspace_name, run_id
         )
         logging.info("The run was successfully triggered and can be found at {}".format(run_url))
+    except:
+        logging.error("An error occurred triggering run in workspace {} - Exiting".format(workspace_id))
+        raise SystemExit(1)

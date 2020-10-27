@@ -74,7 +74,7 @@ def upload_certs(certificate, private_key, ca_chain):
             sensitive = tfe_variable_sensitive
         )
         
-        terraform_workspace.upload_certs(
+        terraform_workspace.upload_certs_to_tfe(
             workspace_headers = tfe_workspace_headers,
             workspace_id = tfe_workspace_id,
             variable_name = tfe_variable_name,
@@ -84,7 +84,7 @@ def upload_certs(certificate, private_key, ca_chain):
     logging.info("Certificate ending in {} was successfully uploaded to TFE workspace vars".format(certificate[-50:-26]))
 
 
-def trigger_run():
+def trigger_workspace_run():
 
     # Trigger new run after TFE variables have been updated
     terraform_workspace.trigger_tfe_workspace_run(
@@ -98,4 +98,4 @@ def trigger_run():
 if __name__ == "__main__":
     certificate, private_key, ca_chain = generate_certs()
     upload_certs(certificate, private_key, ca_chain)
-    trigger_run()
+    trigger_workspace_run()

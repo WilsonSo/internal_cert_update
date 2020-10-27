@@ -94,7 +94,7 @@ def get_workspace_id(workspace_headers, workspace_name, org='CCBD'):
         workspace = list(filter(lambda x:x["attributes"]["name"]==workspace_name, workspaces['data']))[0] 
         return workspace['id']
 
-def upload_certs(workspace_headers, workspace_id, variable_name, payload_object):
+def upload_certs_to_tfe(workspace_headers, workspace_id, variable_name, payload_object):
     
     # Set workspace vars api to upload to
     workspace_vars_url = "https://app.terraform.io/api/v2/workspaces/{}/vars".format(workspace_id)

@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 
 import os
-import sys
 import json
 import logging
 import requests
@@ -16,20 +15,20 @@ def generate_certificate(attributes, vault_env, role, ttl='2160h'):
     vault_headers = {'X-Vault-Token': vault_token}
 
     vault_payload = {
-                'common_name': attributes['common_name'],
-                'alt_names': attributes['alt_name'],
-                'ttl': ttl
-                }
+        'common_name': attributes['common_name'],
+        'alt_names': attributes['alt_name'],
+        'ttl': ttl
+    }
 
     # Make POST call to issue a new cert from the role
-    resp = requests.post(vault_generate_cert_url, json=vault_payload, headers=vault_headers)
-    if not resp.ok:
+    res = requests.post(vault_generate_cert_url, json=vault_payload, headers=vault_headers)
+    if not res.ok:
         logging.error("Unable to generate certificates from {}. Exiting".format(role))
-        sys.exit(1)
+        raise SystemExit(1)
     else:
         logging.info("Certificates successfully generated")
 
-        certs = json.loads(resp.text)
+        certs = json.loads(res.text)
 
         certificate = certs["data"]["certificate"]
         private_key = certs["data"]["private_key"]

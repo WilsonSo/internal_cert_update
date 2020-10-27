@@ -1,0 +1,21 @@
+2020-10-26 18:11:12,542 - root - [INFO] - Certificates successfully generated
+2020-10-26 18:11:12,894 - root - [INFO] - Existing variable found for internal_certificate, updating terraform variable
+2020-10-26 18:11:13,204 - root - [INFO] - Terraform var internal_certificate was successfully updated
+2020-10-26 18:11:13,563 - root - [INFO] - Existing variable found for private_key, updating terraform variable
+2020-10-26 18:11:13,906 - root - [INFO] - Terraform var private_key was successfully updated
+2020-10-26 18:11:14,263 - root - [INFO] - Existing variable found for ca_chain, updating terraform variable
+2020-10-26 18:11:14,595 - root - [INFO] - Terraform var ca_chain was successfully updated
+2020-10-26 18:11:14,596 - root - [INFO] - Certificate ending in uiP6YFl882Q7+C0SangzOQ== was successfully uploaded to TFE workspace vars
+2020-10-26 18:11:15,028 - root - [INFO] - The run was successfully triggered and can be found at https://app.terraform.io/app/CCBD/workspaces/terraform-cloud-tier3/runs/run-d2KkQ3caH4zBY3yo
+2020-10-26 18:12:04,542 - root - [INFO] - The run was successfully triggered and can be found at https://app.terraform.io/app/CCBD/workspaces/terraform-cloud-tier3/runs/run-atUt36yZ5zffMPNk
+2020-10-26 18:13:34,127 - root - [INFO] - The run was successfully triggered and can be found at https://app.terraform.io/app/CCBD/workspaces/terraform-cloud-tier3/runs/run-7dajkaiLuCcqggqy
+2020-10-26 18:14:38,554 - root - [ERROR] - An error occurred triggering run in workspace ws-dkfjslfkd
+2020-10-26 18:15:05,747 - root - [INFO] - Certificates successfully generated
+2020-10-26 18:15:06,096 - root - [INFO] - Existing variable found for internal_certificate, updating terraform variable
+2020-10-26 18:15:06,415 - root - [INFO] - Terraform var internal_certificate was successfully updated
+2020-10-26 18:15:06,765 - root - [INFO] - Existing variable found for private_key, updating terraform variable
+2020-10-26 18:15:07,091 - root - [INFO] - Terraform var private_key was successfully updated
+2020-10-26 18:15:07,435 - root - [INFO] - Existing variable found for ca_chain, updating terraform variable
+2020-10-26 18:15:07,749 - root - [INFO] - Terraform var ca_chain was successfully updated
+2020-10-26 18:15:07,750 - root - [INFO] - Certificate ending in pZiQd95ED3F/eHObahDi8g== was successfully uploaded to TFE workspace vars
+2020-10-26 18:15:08,224 - root - [INFO] - The run was successfully triggered and can be found at https://app.terraform.io/app/CCBD/workspaces/terraform-cloud-tier3/runs/run-Pw4RpmzJPAwMrNUi
